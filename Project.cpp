@@ -3,7 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <stdexcept> // For invalid_argument
-
+#include <iomanip>
 
 using namespace std;
 
@@ -36,7 +36,7 @@ struct Course {
   // ... (additional course information)
 };
 
-// Template class for stack (using a linked list)
+// Template class for stack (using a linke4d list)
 template <typename T>
 class Stack {
 private:
@@ -80,6 +80,84 @@ public:
     return top == nullptr;
   }
 };
+
+// Function to search for an alumnus by name (optional, for modifyAlumnus)
+int searchAlumnusByName(const vector<Alumnus>& alumni, const string& name) {
+  for (int i = 0; i < alumni.size(); ++i) {
+    if (alumni[i].name == name) {
+      return i;
+    }
+  }
+  return -1; // Not found
+}
+void modifyAlumnus(vector<Alumnus>& alumni) {
+  if (alumni.empty()) {
+    cout << "No alumni found in the database." << endl;
+    return;
+  }
+
+  string nameToModify;
+  cout << "Enter the name of the alumnus you want to modify: ";
+  getline(cin, nameToModify);
+
+  int index = searchAlumnusByName(alumni, nameToModify);
+  if (index == -1) {
+    cout << "Alumnus not found." << endl;
+    } else {
+    cout << "Alumnus found." << endl;
+    cout << "Current information:" << endl;
+    alumni[index].display(); // Display current information
+
+    int choice;
+    cout << "\nWhat would you like to modify?" << endl;
+    cout << "1. Name" << endl;
+    cout << "2. Email" << endl;
+    cout << "3. Degree" << endl;
+    // ... (Add options for modifying courses if implemented)
+    cout << "4. Graduation Year" << endl;
+    cout << "5. Cancel" << endl;
+    cout << "Enter your choice (1-5): ";
+    cin >> choice;
+    cin.ignore(); // Consume newline character
+
+    switch (choice) {
+      case 1:
+        cout << "Enter the new name: ";
+        getline(cin, alumni[index].name);
+        cout << "Name modified successfully." << endl;
+        break;
+
+      case 2:
+        cout << "Enter the new email: ";
+        getline(cin, alumni[index].email);
+        cout << "Email modified successfully." << endl;
+        break;
+
+      case 3:
+        cout << "Enter the new degree: ";
+        getline(cin, alumni[index].degree);
+        cout << "Degree modified successfully." << endl;
+        break;
+     
+      case 4:
+        cout << "Enter the new graduation year: ";
+        cin >> alumni[index].graduationYear;
+        cin.ignore(); // Consume newline character
+        cout << "Graduation year modified successfully." << endl;
+        break;
+
+      case 5:
+        cout << "Modification cancelled." << endl;
+        break;
+
+      default:
+        cout << "Invalid choice. Please enter a number between 1 and 5." << endl;
+        break;
+    }
+  }
+}
+
+
 
 // Function to partition the alumni vector based on graduation year (quicksort helper)
 
@@ -136,6 +214,8 @@ void addAlumnus(vector<Alumnus>& alumni) {
   // search, and traversal based on your chosen BST implementation.
 }
 
+
+
 int main() {
   vector<Alumnus> alumni;
 
@@ -153,22 +233,28 @@ int main() {
 
   int choice;
   do {
+    //top border
+    cout << setfill('-') << setw(50) << "" << setfill(' ') << endl;
     cout << "\nAlumni Management System" << endl;
+    cout << setfill('-') << setw(50) << "" << setfill(' ') << endl;
+    //menue options
     cout << "1. Add Alumnus" << endl;
-// cout << "2. Search Alumnus (by Graduation Year)" << endl;
-    cout << "3. Display Alumni (Sorted by Graduation Year - Descending)" << endl;
-    cout << "4. Display Alumni in Reverse Order (optional - using Stack)" << endl; // Using linked list stack
+    cout << "2. Display Alumni (Sorted by Graduation Year - Descending)" << endl;
+    cout << "3. Display Alumni in Reverse Order (optional - using Stack)" << endl; // Using linked list stack
+    cout << "4. Modify Alumnus"<< endl;
     cout << "5. Exit" << endl;
-    cout << "Enter your choice (1-5): ";
+    cout << "Enter your choice (1-4): ";
+    cout << setfill('-') << setw(50) << "" << setfill(' ') << endl;
     cin >> choice;
     cin.ignore(); // Consume newline character
 
     switch (choice) {
       case 1:
         addAlumnus(alumni);
+        cout << "Wonderful! You've added a new alumnus to the database." << endl;
         break;
 
-      case 3:
+      case 2:
         if (!alumni.empty()) {
           // Sort alumni by graduation year (descending)
           quickSort(alumni, 0, alumni.size() - 1);
@@ -184,7 +270,7 @@ int main() {
         }
         break;
 
-      case 4: {
+      case 3: {
         Stack<Alumnus> alumniStack;  // Create a stack using the Stack class
 
         // Option 1: Push sorted alumni from vector (avoids unnecessary sorting)
@@ -212,8 +298,14 @@ int main() {
         break;
       }
 
+      case 4:
+      modifyAlumnus(alumni);
+      break;
+
       case 5:
         cout << "Exiting Alumni Management System." << endl;
+        cout << "Farewell for now! See you next time!" << endl;
+        return 0;
         break;
 
       default:
