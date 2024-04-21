@@ -1,9 +1,9 @@
 #include <iostream>
 #include <string>
-#include <fstream>
 #include <vector>
 #include <algorithm>
 #include <stdexcept> // For invalid_argument
+
 
 using namespace std;
 
@@ -12,93 +12,31 @@ struct Alumnus {
   string name;
   string email;
   string degree;
-  string company;
+  //string courses[3]; // Example: 3 courses
   int graduationYear;
 
   // Function to display alumnus information (non-const member function)
-  void display() {
+  // Made the function const to prevent unintended modifications
+  void display() const {
     cout << "Name: " << name << endl;
     cout << "Email: " << email << endl;
     cout << "Degree: " << degree << endl;
-    cout << "Company: " << company << endl;
+   /* cout << "Courses: ";
+    for (const string& course : courses) {
+      cout << course << " ";
+    }*/
+    cout << endl;
     cout << "Graduation Year: " << graduationYear << endl;
   }
 };
 
-// Structure for a binary search tree node
-struct Node {
-  Alumnus data;
-  Node* left;
-  Node* right;
+// Structure for a course (optional)
+struct Course {
+  string name;
+  // ... (additional course information)
 };
 
-// Class for the binary search tree
-class BST {
-public:
-  Node* root;
-
-  BST() {
-    root = nullptr;
-  }
-
-  // Function to insert a new alumnus into the BST
-  void insert(Alumnus alumnus) {
-    if (root == nullptr) {
-      root = new Node{alumnus, nullptr, nullptr};
-      return;
-    }
-
-    Node* current = root;
-    while (true) {
-      if (alumnus.graduationYear < current->data.graduationYear) {
-        if (current->left == nullptr) {
-          current->left = new Node{alumnus, nullptr, nullptr};
-          break;
-        } else {
-          current = current->left;
-        }
-      } else {
-        if (current->right == nullptr) {
-          current->right = new Node{alumnus, nullptr, nullptr};
-          break;
-        } else {
-          current = current->right;
-        }
-      }
-    }
-  }
-
-  // Function to search for an alumnus with a specific graduation year (optional)
-  Node* search(int graduationYear) {
-    if (root == nullptr) {
-      return nullptr; // Tree is empty
-    }
-
-    Node* current = root;
-    while (current != nullptr) {
-      if (graduationYear == current->data.graduationYear) {
-        return current; // Found
-      } else if (graduationYear < current->data.graduationYear) {
-        current = current->left;
-      } else {
-        current = current->right;
-      }
-    }
-
-    return nullptr; // Not found
-  }
-
-  // Function to perform an in-order traversal (optional)
-  void displayInOrder(Node* current) {
-    if (current != nullptr) {
-      displayInOrder(current->left);
-      current->data.display();
-      displayInOrder(current->right);
-    }
-  }
-};
-
-// Template class for stack (can store any data type)
+// Template class for stack (using a linked list)
 template <typename T>
 class Stack {
 private:
@@ -143,8 +81,36 @@ public:
   }
 };
 
-// Function to add a new alumnus to the database (including BST insertion)
-void addAlumnus(vector<Alumnus>& alumni, BST& bst) {
+// Function to partition the alumni vector based on graduation year (quicksort helper)
+
+
+
+   // Function to partition the alumni vector based on graduation year (quicksort helper)
+int partition(vector<Alumnus>& alumni, int low, int high) {
+  Alumnus pivot = alumni[high];
+  int i = low - 1;
+
+  for (int j = low; j < high; j++) {
+    if (alumni[j].graduationYear >= pivot.graduationYear) {
+      i++;
+      swap(alumni[i], alumni[j]);
+    }
+  }
+  swap(alumni[i + 1], alumni[high]);
+  return i + 1;
+}
+
+// Recursive quicksort implementation to sort alumni by graduation year (descending)
+void quickSort(vector<Alumnus>& alumni, int low, int high) {
+  if (low < high) {
+    int pivotIndex = partition(alumni, low, high);
+    quickSort(alumni, low, pivotIndex - 1);
+    quickSort(alumni, pivotIndex + 1, high);
+  }
+}
+
+// Function to add a new alumnus to the database (including BST insertion - optional)
+void addAlumnus(vector<Alumnus>& alumni) {
   Alumnus newAlumnus;
 
   cout << "Enter alumnus information:" << endl;
@@ -152,49 +118,46 @@ void addAlumnus(vector<Alumnus>& alumni, BST& bst) {
   getline(cin, newAlumnus.name);
   cout << "Email: ";
   getline(cin, newAlumnus.email);
-
   cout << "Degree: ";
   getline(cin, newAlumnus.degree);
-  cout << "Company: ";
-  getline(cin, newAlumnus.company);
+/*
+  for (int i = 0; i < 3; i++) { // Example: Input for 3 courses
+    cout << "Course " << (i + 1) << ": ";
+    getline(cin, newAlumnus.courses[i]);
+  }*/
   cout << "Graduation Year: ";
   cin >> newAlumnus.graduationYear;
   cin.ignore(); // Consume newline character
 
-  alumni.push_back(newAlumnus); // Add to vector (optional)
-  bst.insert(newAlumnus);   // Insert into BST
+  alumni.push_back(newAlumnus);
+
+  // Optional: BST insertion (replace with your BST implementation)
+  // You'll need to implement the necessary functions for insertion,
+  // search, and traversal based on your chosen BST implementation.
 }
 
 int main() {
   vector<Alumnus> alumni;
 
-   Alumnus alumnus1;
-    alumnus1.name = "John Doe";
-    alumnus1.email = "john.doe@example.com";
-    alumnus1.degree = "Computer Science";
-    alumnus1.company = "ABC Tech";
-    alumnus1.graduationYear = 2020;
-    alumni.push_back(alumnus1);
+  // Pre-defined alumni (optional)
+  alumni.push_back({"Alice Smith", "alice.smith@example.com", "Computer Science",2020});
+  alumni.push_back({"Bob Johnson", "bob.johnson@example.com", "Electrical Engineering",2018});
+  alumni.push_back({"Charlie Brown", "charlie.brown@example.com", "Mathematics", 2022});
+  alumni.push_back({"David Lee", "david.lee@example.com", "Mechanical Engineering",2019});
+  alumni.push_back({"Emily Wilson", "emily.wilson@example.com", "Biology",2021});
+  alumni.push_back({"Frank Garcia", "frank.garcia@example.com", "History",2017});
+  alumni.push_back({"Grace Miller", "grace.miller@example.com", "English Literature",2023});
+  alumni.push_back({"Henry Hernandez", "henry.hernandez@example.com", "Business Administration",2020});
+  alumni.push_back({"Isabella Jones", "isabella.jones@example.com", "Psychology",2018});
+  alumni.push_back({"Jacob Williams", "jacob.williams@example.com", "Computer Science",2022});
 
-    Alumnus alumnus2;
-    alumnus2.name = "Jane Smith";
-    alumnus2.email = "jane.smith@example.com";
-    alumnus2.degree = "Business Administration";
-    alumnus2.company = "XYZ Finance";
-    alumnus2.graduationYear = 2022;
-    alumni.push_back(alumnus2);
-
-  BST bst; // Declare the BST object
-
- bst.insert(alumnus1);
-    bst.insert(alumnus2);
   int choice;
   do {
     cout << "\nAlumni Management System" << endl;
     cout << "1. Add Alumnus" << endl;
-    cout << "2. Search Alumnus (by Graduation Year)" << endl; // (optional)
-    cout << "3. Display Alumni (In-Order Traversal)" << endl; // (optional)
-    cout << "4. Display Alumni in Reverse Order (using Stack)" << endl;
+// cout << "2. Search Alumnus (by Graduation Year)" << endl;
+    cout << "3. Display Alumni (Sorted by Graduation Year - Descending)" << endl;
+    cout << "4. Display Alumni in Reverse Order (optional - using Stack)" << endl; // Using linked list stack
     cout << "5. Exit" << endl;
     cout << "Enter your choice (1-5): ";
     cin >> choice;
@@ -202,45 +165,50 @@ int main() {
 
     switch (choice) {
       case 1:
-        addAlumnus(alumni, bst);
+        addAlumnus(alumni);
         break;
-
-      case 2: {
-        int searchYear;
-        cout << "Enter graduation year to search: ";
-        cin >> searchYear;
-        cin.ignore();
-
-        Node* searchResult = bst.search(searchYear);
-        if (searchResult != nullptr) {
-          cout << "Alumnus Found!" << endl;
-          searchResult->data.display();
-        } else {
-          cout << "Alumnus not found in the database." << endl;
-        }
-        break;
-      }
 
       case 3:
-        cout << "\nAlumni List (In-Order):" << endl;
-        bst.displayInOrder(bst.root);
+        if (!alumni.empty()) {
+          // Sort alumni by graduation year (descending)
+          quickSort(alumni, 0, alumni.size() - 1);
+
+          cout << "\nAlumni List (Sorted by Graduation Year - Descending):" << endl;
+          for (const Alumnus& alumnus : alumni) {
+            // Corrected: Use const reference to avoid modifying alumnus object
+            alumnus.display();  // Call display() with const reference
+            cout << endl;
+          }
+        } else {
+          cout << "No alumni found in the database." << endl;
+        }
         break;
 
       case 4: {
-        Stack<Alumnus> alumniStack; // Create a stack of Alumnus objects
+        Stack<Alumnus> alumniStack;  // Create a stack using the Stack class
 
-        // Push all alumni onto the stack
-        for (Alumnus& alumnus : alumni) {
-          alumniStack.push(alumnus);
+        // Option 1: Push sorted alumni from vector (avoids unnecessary sorting)
+        for (const Alumnus& alumnus : alumni) {
+          alumniStack.push(alumnus); // Push by value (copy)
         }
 
-        // Pop and display alumni in reverse order
-        while (!alumniStack.isEmpty()) {
-          Alumnus alumnus = alumniStack.pop();
-          alumnus.display();
-          cout << endl;
-        }
+        // Option 2: Sort alumni here and then push (less efficient)
+        // ... (sort alumni)
+        // for (const Alumnus& alumnus : alumni) {
+        //   alumniStack.push(alumnus);
+        // }
 
+        if (!alumniStack.isEmpty()) {
+          cout << "\nAlumni List (Reverse Order - using Stack):" << endl;
+          while (!alumniStack.isEmpty()) {
+            // Corrected: Use const reference to avoid modifying popped element
+            const Alumnus& alumnus = alumniStack.pop();  // Get const reference
+            alumnus.display();
+            cout << endl;
+          }
+        } else {
+          cout << "No alumni found in the database." << endl;
+        }
         break;
       }
 
@@ -251,7 +219,7 @@ int main() {
       default:
         cout << "Invalid choice. Please enter a number between 1 and 5." << endl;
     }
-  } while (choice != 0);
+  } while (choice != 5);
 
   return 0;
 }
